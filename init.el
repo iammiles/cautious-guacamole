@@ -1,160 +1,109 @@
-; packages
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-
-; set wanted packages
-(setq package-list '(cider clojure-mode company paredit projectile rainbow-delimiters))
-
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-; fetch the list of packages available 
-(unless package-archive-contents
+(when (not package-archive-contents)
   (package-refresh-contents))
 
-; install the missing packages
-(dolist (package package-list)
-  (unless (package-installed-p package)
-    (package-install package)))
+(defvar myPackages
+  '(clojure-mode
+    cider
+    company
+    magit
+    gruvbox-theme
+    rainbow-delimiters
+    paredit
+    elpy
+    py-autopep8     
+    blacken              
+    flycheck)
+)
+    
+;; Scans the list in myPackages
+;; If the package listed is not already installed, install it
+(mapc #'(lambda (package)
+          (unless (package-installed-p package)
+            (package-install package)))
+      myPackages)
+    
+    
 
-; ------- Emacs Settings -----------
+;; ---
+;; Global Settings
 
-(set-frame-font "Roboto Mono Light 14")
+;; theme
+(load-theme 'gruvbox-light-medium t)
 
-(setq default-frame-alist
-      (append (list '(width . 72) '(height . 40))))
+;; font
+(set-face-attribute 'default nil :font "Hack")
 
-; don't set hard tabs
-(setq-default indent-tabs-mode nil)
-
-(set-frame-parameter (selected-frame) 'internal-border-width 20)
-(setq x-underline-at-descent-line t)
-(setq initial-major-mode 'text-mode)
-(setq-default line-spacing 0)
-(set-default 'cursor-type  '(hbar . 2))
-(blink-cursor-mode 0)
-(fringe-mode '(0 . 0))
-
-(setq frame-background-mode 'light)
-(set-background-color "#ffffff")
-(set-foreground-color "#666666")
-
-(setq inhibit-startup-screen t)
-(setq inhibit-startup-echo-area-message t)
-(setq inhibit-startup-message t)   ;; Show/hide startup page
-(setq initial-scratch-message nil) ;; Show/hide *scratch* buffer message
-;; (menu-bar-mode 0)                  ;; Show/hide menubar
-(tool-bar-mode 0)                  ;; Show/hide toolbar
-(tooltip-mode  0)                  ;; Show/hide tooltip
-(scroll-bar-mode 0)                ;; Show/hide scrollbar
-
-
-
-(defun mode-line-render (left right)
-  "Return a string of `window-width' length containing left, and
-   right aligned respectively."
-  (let* ((available-width (- (window-total-width) (length left) )))
-    (format (format "%%s %%%ds" available-width) left right)))
-
-
-(setq-default header-line-format
-  '(:eval (mode-line-render
-
-   (format-mode-line
-    (list
-     (propertize "File " 'face `(:weight regular))
-     "%b "
-     '(:eval (if (and buffer-file-name (buffer-modified-p))
-         (propertize "(modified)" 
-		     'face `(:weight light
-			     :foreground "#aaaaaa"))))))
-   
-   (format-mode-line
-    (propertize "%3l:%2c "
-	'face `(:weight light :foreground "#aaaaaa"))))))
-
-(set-face-attribute 'region nil
-		    :background "#f0f0f0")
-(set-face-attribute 'highlight nil
-		    :foreground "black"
-		    :background "#f0f0f0")
-(set-face-attribute 'bold nil
- 		    :foreground "black"
-		    :weight 'regular)
-
-
-(setq-default mode-line-format "")
-
-(set-face-attribute 'header-line nil
-;;                    :weight 'regular
-		    :height 140
-                    :underline "black"
-                    :foreground "black"
-		    :background "white"
-                    :box `(:line-width 3 :color "white" :style nil))
-
-(set-face-attribute 'mode-line nil
-                    :height 10
-                    :underline "black"
-                    :background "white"
-		                :foreground "white"
-                                :box nil)
-
-(set-face-attribute 'mode-line-inactive nil
-                    :box nil
-                    :inherit 'mode-line)
-
-(set-face-attribute 'mode-line-buffer-id nil 
-                    :weight 'light)
-
-; line numbers
+;; line numbers
 (global-linum-mode t)
 
-; highlight current line
+;; highlight current line
 (global-hl-line-mode 1)
 
-; keep syntax highlighting for current line
+;; keep syntax highlighting for current line
 (set-face-foreground 'highlight nil)
 
-; experimental tab width setting
-(setq tab-width 4) ; or any other preferred value
+;; set tabwidth
+(setq tab-width 4)
     (defvaralias 'c-basic-offset 'tab-width)
-    (defvaralias 'cperl-indent-level 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
 
-(setq make-backup-files nil) ; stop creating backup~ files
-(setq auto-save-default nil) ; stop creating #autosave# files
+
+;; show parenthesis mode
+(show-paren-mode 1)
+
+;; enable paredit
+(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+
+
+;; stop creating backup~ files
+(setq make-backup-files nil)
+;; stop creating #autosave# files
+(setq auto-save-default nil)
 
 ; set the default comment column to 80 
 (setq-default comment-column 80)
 
+;; set python3 as default
+(setq python-shell-interpreter "/usr/bin/python3")
+
+
 ; add path
-(add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "/usr/local/bin" "~/.local/bin")
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
 
-
-; --------- Package Settings ------------
-
-;; Company Mode
+;; ---
+;; Package Settings
 ;; globally add company mode
 (global-company-mode)
 
-; Magit
+;; Magit
 (global-set-key (kbd "C-x g") 'magit-status)
-
 
 ; Projectile
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
-;; -------- Clojure Stuff --------
-
+;; ---
+;; Clojure settings
 ;; enter cider mode when entering clojure major mode
 (add-hook 'clojure-mode-hook 'cider-mode)
 
+(setq clojure-align-forms-automatically t)
 
-;; show parenthesis mode
-(show-paren-mode 1)
+
 
 ;; Rainbow Delimiters
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -162,6 +111,47 @@
 ;; enable paredit for Clojure
 (add-hook 'clojure-mode-hook #'paredit-mode)
 
-
 ;; enable paredit for cider
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
+
+
+;; ----
+;; Python settings
+
+;; Enable elpy
+(elpy-enable)
+
+;; enable format-on-save
+(add-hook 'elpy-mode-hook (lambda ()
+                            (add-hook 'before-save-hook
+                                      'elpy-format-code nil t)))
+
+
+;; Enable Flycheck
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+
+;; Enable autopep8
+;(require 'py-autopep8)
+;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+
+(setq elpy-rpc-virtualenv-path 'current)
+(setq elpy-rpc-python-command "python3")
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(elpy-rpc-python-command "python3")
+ '(package-selected-packages
+   (quote
+	(elpy blacken gruvbox-theme markdown-mode rainbow-delimiters projectile paredit magit ivy flycheck-clj-kondo company cider))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
