@@ -11,17 +11,12 @@
 (defvar myPackages
   '(clojure-mode
     cider
-    lsp-mode
-    flycheck
-    lsp-treemacs
     company
-    projectile
     magit
     gruvbox-theme
     rainbow-delimiters
     paredit
-   )
-)
+    flycheck))
     
 ;; Scans the list in myPackages
 ;; If the package listed is not already installed, install it
@@ -36,10 +31,10 @@
 ;; Global Settings
 
 ;; theme
-(load-theme 'gruvbox-dark-soft t)
+(load-theme 'gruvbox-dark-medium t)
 
 ;; font
-; (set-face-attribute 'default nil :font "Hack")
+(set-face-attribute 'default nil :font "Hack")
 
 ;; line numbers
 (global-linum-mode t)
@@ -59,18 +54,12 @@
 ;; show parenthesis mode
 (show-paren-mode 1)
 
-;; set clojure-lsp-path
-(setq lsp-clojure-custom-server-command '("bash" "-c" "/usr/local/bin/clojure-lsp")) ; delete this line if installing via melpa
-
 ;; enable paredit
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-
-;; lsp lense
-(setq lsp-lens-enable t)
 
 
 ;; stop creating backup~ files
@@ -103,21 +92,9 @@
 ;; ---
 ;; Clojure settings
 ;; enter cider mode when entering clojure major mode
-(add-hook 'clojure-mode-hook 'lsp)
-(add-hook 'clojurescript-mode-hook 'lsp)
-(add-hook 'clojurec-mode-hook 'lsp)
-
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024)
-      treemacs-space-between-root-nodes nil
-      company-idle-delay 0.0
-      company-minimum-prefix-length 1
-      lsp-lens-enable t
-      lsp-signature-auto-activate nil)
+(add-hook 'clojure-mode-hook 'cider-mode)
 
 (setq clojure-align-forms-automatically t)
-
-
 
 ;; Rainbow Delimiters
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -127,4 +104,3 @@
 
 ;; enable paredit for cider
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
-
