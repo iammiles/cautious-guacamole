@@ -20,6 +20,12 @@
 (use-package magit
   :ensure t)
 
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize)))
+
 ;; -- Lispy things
 (use-package cider
   :ensure t)
@@ -31,6 +37,14 @@
   :ensure t)
 
 (use-package rainbow-delimiters
+  :ensure t)
+
+;; -- Other langs
+
+(use-package ruby-end
+  :ensure t)
+
+(use-package eglot
   :ensure t)
 
 ;; -- Theming
@@ -83,7 +97,7 @@
  '(custom-safe-themes
    '("871b064b53235facde040f6bdfa28d03d9f4b966d8ce28fb1725313731a2bcc8" default))
  '(package-selected-packages
-   '(ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
+   '(exec-path-from-shell ruby-end ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
