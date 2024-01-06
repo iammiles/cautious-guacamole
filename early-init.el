@@ -1,2 +1,2 @@
-(setq package-enable-at-startup nil)
+(set-face-attribute 'default nil :family "Berkeley Mono" :height 120)
 
