@@ -24,7 +24,12 @@
   :ensure t
   :config
   (when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize)))
+
+(use-package eglot
+  :ensure t
+  :defer t
+  :hook (ruby-mode . eglot-ensure))
 
 ;; -- Lispy things
 (use-package cider
@@ -44,8 +49,12 @@
 (use-package ruby-end
   :ensure t)
 
-(use-package eglot
-  :ensure t)
+(use-package inf-ruby
+  :ensure t
+  :defer t
+  :config
+  (autoload 'inf-ruby-minor-mode "inf-ruby" "Run an inferior Ruby process" t)
+  (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
 
 ;; -- Theming
 (use-package gruvbox-theme
@@ -97,7 +106,7 @@
  '(custom-safe-themes
    '("871b064b53235facde040f6bdfa28d03d9f4b966d8ce28fb1725313731a2bcc8" default))
  '(package-selected-packages
-   '(exec-path-from-shell ruby-end ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
+   '(inf-ruby exec-path-from-shell ruby-end ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
