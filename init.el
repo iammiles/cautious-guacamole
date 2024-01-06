@@ -58,9 +58,10 @@
 
 ;; -- Theming
 (use-package gruvbox-theme
-  :ensure t
-  :config
-  (load-theme 'gruvbox-dark-soft))
+  :ensure t)
+
+(load-theme 'gruvbox-dark-soft t)
+  
 
 (use-package ligature
   :ensure t
@@ -95,6 +96,13 @@
 
 (display-line-numbers-mode t)
 (global-hl-line-mode t)
+(tool-bar-mode -1)
+(setq inhibit-splash-screen t)
+(setq use-file-dialog nil)
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 
 
