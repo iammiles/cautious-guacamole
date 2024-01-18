@@ -18,10 +18,12 @@
   (add-hook 'after-init-hook 'enable-paredit-mode))
 
 (use-package magit
+  :defer t
   :ensure t)
 
 (use-package exec-path-from-shell
   :ensure t
+  :defer t
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
@@ -33,16 +35,40 @@
 
 ;; -- Lispy things
 (use-package cider
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package geiser-guile
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package sly
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package rainbow-delimiters
-  :ensure t)
+  :ensure t
+  :defer t)
+
+(use-package janet-mode
+  :ensure t
+  :defer t)
+
+(load-file "~/.emacs.d/inf-janet.el")
+(require 'inf-janet)
+(setq inf-janet-program "/opt/homebrew/bin/janet")
+(add-hook 'janet-mode-hook #'inf-janet-minor-mode)
+
+
+
+;(use-package janet-ts-mode
+;  :ensure t
+; :defer t)
+
+;(use-package ajrepl
+;  :config
+;  (add-hook 'janet-ts-mode-hook
+;            #'ajrepl-interaction-mode))
 
 ;; -- Other langs
 
@@ -90,9 +116,12 @@
      ; Group G
      "=:" "=:=" "=!=" "==" "===" "=/=" "=~" "~-" "^=" "__" "!=" "!==" "-~"
      "--" "---"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  
+(global-ligature-mode t))
+
+(use-package nerd-icons
+  :ensure t
+  :defer t)
 
 (display-line-numbers-mode t)
 (global-hl-line-mode t)
@@ -114,7 +143,7 @@
  '(custom-safe-themes
    '("871b064b53235facde040f6bdfa28d03d9f4b966d8ce28fb1725313731a2bcc8" default))
  '(package-selected-packages
-   '(inf-ruby exec-path-from-shell ruby-end ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
+   '(inf-janet janet-ts-mode inf-ruby exec-path-from-shell ruby-end ligature gruvbox-theme rainbow-delimiters sly geiser-guile cider magit paredit company)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
