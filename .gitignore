@@ -1,0 +1,11 @@
+url/
+transient/
+racket-mode/
+org-roam.db
+eshell/
+elpa/
+bookmarks
+auto-save-list/
+.lsp-session-v1
+.org-id-locations
+
