@@ -8,6 +8,9 @@
 (setenv "JAVA_HOME" "/opt/homebrew/opt/openjdk/bin/java")
 (add-to-list 'exec-path (expand-file-name "bin" (getenv "JAVA_HOME")))
 
+(global-display-line-numbers-mode)
+(global-prettify-symbols-mode 1)
+
 (setq tool-bar-mode nil)
 (setq make-backup-files nil)
 (setq-default indent-tabs-mode nil)
@@ -34,6 +37,7 @@
 (set-frame-font "Berkeley Mono 13" nil t)
 (load-theme 'gruvbox-dark-medium t)
 (global-company-mode t)
+
 ;; -- racket stuff
 
 (add-hook 'racket-mode-hook #'eldoc-mode)
@@ -44,6 +48,9 @@
 
 (with-eval-after-load 'racket-mode
   (define-key racket-mode-map (kbd "C-c s") #'racket-xp-describe))
+
+(add-to-list 'load-path "/Users/miles/.opam/cs3110-2026sp/share/emacs/site-lisp")
+     (require 'ocp-indent)
 
 (setq racket-xp-eldoc-level 'complete)
 (setq eldoc-documentation-strategy #'eldoc-documentation-compose)
@@ -61,10 +68,20 @@
 ;; Don’t ask for confirmation every time
 (setq org-confirm-babel-evaluate nil)
 
+;; performance tweaks
+
+;; disable bidirectional text scanning
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+
+;; skip fontification during input
+(setq redisplay-skip-fontification-on-input t)
+
+(setq read-process-output-max (* 4 1024 1024))
+
 
 (setq inferior-lisp-program (executable-find "sbcl"))
-
-
 
 
 (add-hook 'emacs-lisp-mode-hook       'enable-paredit-mode)
@@ -84,12 +101,60 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("5aedf993c7220cbbe66a410334239521d8ba91e1815f6ebde59cecc2355d7757" "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3" default))
+   '("5aedf993c7220cbbe66a410334239521d8ba91e1815f6ebde59cecc2355d7757"
+     "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3"
+     default))
  '(package-selected-packages
-   '(ajrepl janet-ts-mode gruvbox-theme rainbow-delimiters geiser-guile company sly paredit)))
+   '(cider company dune flycheck flycheck-ocaml
+           geiser-guile gruvbox-theme lsp-treemacs merlin merlin-eldoc
+           org-roam paredit racket-mode rainbow-delimiters sly tuareg
+           utop)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+
+
+(setq use-package-verbose t)
+
+;; Major mode for OCaml programming
+(use-package tuareg
+  :ensure t
+  :mode (("\\.ocamlinit\\'" . tuareg-mode)))
+
+;; Major mode for editing Dune project files
+(use-package dune
+  :ensure t)
+
+;; Merlin provides advanced IDE features
+(use-package merlin
+  :ensure t
+  :config
+  (add-hook 'tuareg-mode-hook #'merlin-mode)
+  (add-hook 'merlin-mode-hook #'company-mode)
+  ;; we're using flycheck instead
+  (setq merlin-error-after-save nil))
+
+(use-package merlin-eldoc
+  :ensure t
+  :hook ((tuareg-mode) . merlin-eldoc-setup))
+
+;; This uses Merlin internally
+(use-package flycheck-ocaml
+  :ensure t
+  :config
+  (flycheck-ocaml-setup))
+
+	
+
+;; utop configuration
+(use-package utop
+  :ensure t
+  :config
+  (add-hook 'tuareg-mode-hook #'utop-minor-mode))
+
